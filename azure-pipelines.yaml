@@ -2,18 +2,22 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  name: myAgent
 
 variables:
   ARM_CLIENT_ID: $(ARM_CLIENT_ID)
   ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
   ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
   ARM_TENANT_ID: $(ARM_TENANT_ID)
+  # Agent pool name
+  agentName: 'myAgent'
 
 stages:
 - stage: Initialize
   jobs:
   - job: TerraformInit
+    pool:
+      name: $(agentName)
     steps:
     - checkout: self
 
@@ -33,6 +37,8 @@ stages:
   dependsOn: Initialize
   jobs:
   - job: TerraformPlan
+    pool:
+      name: $(agentName)
     steps:
     - script: |
         terraform plan -out=tfplan
@@ -43,6 +49,8 @@ stages:
   dependsOn: Plan
   jobs:
   - job: TerraformApply
+    pool: 
+      name: $(agentName)
     steps:
     - script: |
         terraform apply -auto-approve tfplan
