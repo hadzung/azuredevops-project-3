@@ -3,7 +3,7 @@ trigger:
 
 pool:
   name: myAgent
-  
+
 variables:
   ARM_CLIENT_ID: $(ARM_CLIENT_ID)
   ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
@@ -14,47 +14,47 @@ variables:
 stages:
 - stage: Initialize
   jobs:
-  - job: TerraformInit
-    pool:
-      name: $(agentName)
-    steps:
-    - checkout: self
+    - job: TerraformInit
+      pool:
+        name: $(agentName)
+      steps:
+        - checkout: self
 
-    - task: UseTerraform@0
-      displayName: 'Install Terraform'
-      inputs:
-        terraformVersion: 'latest'
+        - task: UseTerraform@0
+          displayName: 'Install Terraform'
+          inputs:
+            terraformVersion: 'latest'
 
-    - script: |
-        terraform init
-      displayName: 'Terraform Init'
-      workingDirectory: 'terraform/environments/test'
-	  
+        - script: |
+            terraform init
+          displayName: 'Terraform Init'
+          workingDirectory: 'terraform/environments/test'
+
 - stage: Plan
   dependsOn: Initialize
   jobs:
-  - job: TerraformPlan
+    - job: TerraformPlan
       pool:
-      name: $(agentName)
-    steps:
-    - script: |
-        terraform plan -out=tfplan
-      displayName: 'Terraform Plan'
-      workingDirectory: 'terraform/environments/test'
+        name: $(agentName)
+      steps:
+        - script: |
+            terraform plan -out=tfplan
+          displayName: 'Terraform Plan'
+          workingDirectory: 'terraform/environments/test'
 
 - stage: Apply
   dependsOn: Plan
   jobs:
-  - job: TerraformApply
-    pool:
-      name: $(agentName)
-    steps:
-    - script: |
-        terraform apply -auto-approve tfplan
-      displayName: 'Terraform Apply'
-      workingDirectory: 'terraform/environments/test'
-      env:
-        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
-        ARM_TENANT_ID: $(ARM_TENANT_ID)
+    - job: TerraformApply
+      pool:
+        name: $(agentName)
+      steps:
+        - script: |
+            terraform apply -auto-approve tfplan
+          displayName: 'Terraform Apply'
+          workingDirectory: 'terraform/environments/test'
+          env:
+            ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+            ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+            ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+            ARM_TENANT_ID: $(ARM_TENANT_ID)
