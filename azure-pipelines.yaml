@@ -16,7 +16,7 @@ stages:
 - stage: Initialize
   jobs:
   - job: TerraformInit
-	pool:
+    pool:
       name: $(agentName)
     steps:
     - checkout: self
@@ -35,7 +35,7 @@ stages:
   dependsOn: Initialize
   jobs:
   - job: TerraformPlan
-  	pool:
+      pool:
       name: $(agentName)
     steps:
     - script: |
@@ -47,7 +47,7 @@ stages:
   dependsOn: Plan
   jobs:
   - job: TerraformApply
-  	pool:
+    pool:
       name: $(agentName)
     steps:
     - script: |
