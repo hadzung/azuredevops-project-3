@@ -25,6 +25,10 @@ stages:
           displayName: 'Install Azure CLI'
 
         - script: |
+            az login --service-principal -u $(ARM_CLIENT_ID) -p $(ARM_CLIENT_SECRET) --tenant $(ARM_TENANT_ID)
+          displayName: 'Azure CLI Login'
+
+        - script: |
             curl -sSL https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip -o terraform.zip
             unzip -o terraform.zip
             sudo mv -f terraform /usr/local/bin/terraform
