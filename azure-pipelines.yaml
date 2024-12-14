@@ -22,7 +22,7 @@ stages:
     - checkout: self
 
     - script: |
-        sudo apt install unzip
+        sudo apt install unzip -y
         curl -sSL https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip -o terraform.zip
         unzip terraform.zip
         sudo mv terraform /usr/local/bin/
