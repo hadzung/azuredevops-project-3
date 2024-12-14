@@ -44,4 +44,19 @@ stages:
           displayName: 'Terraform Plan'
           workingDirectory: 'terraform/environments/test'
 
-- stage:
+- stage: Apply
+  dependsOn: Plan
+  jobs:
+    - job: TerraformApply
+      pool:
+        name: $(agentName)
+      steps:
+        - script: |
+            terraform apply -auto-approve tfplan
+          displayName: 'Terraform Apply'
+          workingDirectory: 'terraform/environments/test'
+          env:
+            ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+            ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+            ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+            ARM_TENANT_ID: $(ARM_TENANT_ID)
