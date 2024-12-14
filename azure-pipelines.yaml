@@ -1,0 +1,55 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+  ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+  ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+  ARM_TENANT_ID: $(ARM_TENANT_ID)
+
+stages:
+- stage: Initialize
+  jobs:
+  - job: TerraformInit
+    steps:
+    - checkout: self
+
+    - script: |
+        curl -sSL https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip -o terraform.zip
+        unzip terraform.zip
+        sudo mv terraform /usr/local/bin/
+        terraform version
+      displayName: 'Install Terraform'
+
+    - script: |
+        terraform init
+      displayName: 'Terraform Init'
+      workingDirectory: 'terraform/environments/test'
+
+- stage: Plan
+  dependsOn: Initialize
+  jobs:
+  - job: TerraformPlan
+    steps:
+    - script: |
+        terraform plan -out=tfplan
+      displayName: 'Terraform Plan'
+      workingDirectory: 'terraform/environments/test'
+
+- stage: Apply
+  dependsOn: Plan
+  jobs:
+  - job: TerraformApply
+    steps:
+    - script: |
+        terraform apply -auto-approve tfplan
+      displayName: 'Terraform Apply'
+      workingDirectory: 'terraform/environments/test'
+      env:
+        ARM_CLIENT_ID: $(ARM_CLIENT_ID)
+        ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
+        ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
+        ARM_TENANT_ID: $(ARM_TENANT_ID)
