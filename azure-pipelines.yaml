@@ -12,7 +12,7 @@ variables:
   key: "tfstate.azure.proj3"
   agentName: 'myAgent'
 
-  stages:
+stages:
 - stage: tfdeploy
   jobs:
     - job: apply
