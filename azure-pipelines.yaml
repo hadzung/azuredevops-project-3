@@ -65,12 +65,14 @@ stages:
             backendAzureRmContainerName: '$(container_name)'
             backendAzureRmKey: '$(key)'
         - task: TerraformTaskV4@4
+          displayName: plan
           inputs:
             provider: 'azurerm'
             command: 'plan'
             workingDirectory: $(terraformWorkingDirectory)
             environmentServiceNameAzureRM: 'mySC'
         - task: TerraformTaskV4@4
+          displayName: Apply
           inputs:
             provider: 'azurerm'
             command: 'apply'
