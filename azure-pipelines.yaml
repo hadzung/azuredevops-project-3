@@ -10,10 +10,14 @@ variables:
   storage_account_name: "tfstate1781720245"
   container_name: "tfstate"
   key: "tfstate.azure.proj3"
+  agentName: 'myAgent'
+
 stages:
   - stage: TerraformInit
     jobs:
       - job: validate
+        pool:
+         name: $(agentName)
         continueOnError: false
         steps:
         - task: TerraformInstaller@1
@@ -42,6 +46,8 @@ stages:
     dependsOn: TerraformInit
     jobs:
       - job: apply
+        pool:
+         name: $(agentName)      
         steps:
         - task: TerraformInstaller@1
           displayName: Install Terraform
