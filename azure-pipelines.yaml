@@ -11,10 +11,8 @@ variables:
   container_name: "tfstate"
   key: "tfstate.azure.proj3"
   agentName: 'myAgent'
-  lockID: 'ec5d85c2-a6de-1f28-681d-bc13dbf74811'
 
-
-stages:
+  stages:
 - stage: tfdeploy
   jobs:
     - job: apply
@@ -25,8 +23,6 @@ stages:
         displayName: Install Terraform
         inputs:
           terraformVersion: 'latest'
-      - script: |
-          terraform force-unlock -force $(lockID)
         displayName: 'Force Unlock State'
       - task: TerraformTaskV4@4
         displayName: Init
