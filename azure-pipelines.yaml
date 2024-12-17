@@ -1,74 +1,73 @@
-trigger:
-- main
+trigger: none
 
 pool:
   name: myAgent
 
 variables:
-  ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-  ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-  ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
-  ARM_TENANT_ID: $(ARM_TENANT_ID)
-  agentName: 'myAgent'
-
+  serviceConnection: 'mySC'
+  azureLocation: 'East US 2'
+  terraformWorkingDirectory: 'terraform/environments/test'
+  storage_account_name: "tfstate1781720245"
+  container_name: "tfstate"
+  key: "tfstate.azure.proj3"
 stages:
-- stage: Initialize
-  jobs:
-    - job: TerraformInit
-      pool:
-        name: $(agentName)
-      steps:
-        - checkout: self
-
-        - script: |
-            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          displayName: 'Install Azure CLI'
-
-        - script: |
-            export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
-            export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
-            export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
-            export ARM_TENANT_ID=$(ARM_TENANT_ID)
-            az login --service-principal -u $ARM_CLIENT_ID -p $ARM_CLIENT_SECRET --tenant $ARM_TENANT_ID
-          displayName: 'Azure CLI Login'
-
-        - script: |
-            curl -sSL https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip -o terraform.zip
-            unzip -o terraform.zip
-            sudo mv -f terraform /usr/local/bin/terraform
-            terraform version
-          displayName: 'Install Terraform'
-
-        - script: |
-            terraform init
-          displayName: 'Terraform Init'
-          workingDirectory: 'terraform/environments/test'
-
-- stage: Plan
-  dependsOn: Initialize
-  jobs:
-    - job: TerraformPlan
-      pool:
-        name: $(agentName)
-      steps:
-        - script: |
-            terraform plan -out=tfplan
-          displayName: 'Terraform Plan'
-          workingDirectory: 'terraform/environments/test'
-
-- stage: Apply
-  dependsOn: Plan
-  jobs:
-    - job: TerraformApply
-      pool:
-        name: $(agentName)
-      steps:
-        - script: |
-            terraform apply -auto-approve tfplan
-          displayName: 'Terraform Apply'
-          workingDirectory: 'terraform/environments/test'
-          env:
-            ARM_CLIENT_ID: $(ARM_CLIENT_ID)
-            ARM_CLIENT_SECRET: $(ARM_CLIENT_SECRET)
-            ARM_SUBSCRIPTION_ID: $(ARM_SUBSCRIPTION_ID)
-            ARM_TENANT_ID: $(ARM_TENANT_ID)
+  - stage: TerraformInit
+    jobs:
+      - job: validate
+        continueOnError: false
+        steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: $(terraformWorkingDirectory)
+            backendServiceArm: 'mySC'
+            backendAzureRmResourceGroupName: 'Azuredevops'
+            backendAzureRmStorageAccountName: '$(storage_account_name)'
+            backendAzureRmContainerName: '$(container_name)'
+            backendAzureRmKey: '$(key)'
+        - task: TerraformTaskV4@4
+          displayName: Validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: $(terraformWorkingDirectory)
+  - stage: tfdeploy
+    condition: succeeded('TerraformInit')
+    dependsOn: TerraformInit
+    jobs:
+      - job: apply
+        steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: $(terraformWorkingDirectory)
+            backendServiceArm: 'mySC'
+            backendAzureRmResourceGroupName: 'Azuredevops'
+            backendAzureRmStorageAccountName: '$(storage_account_name)'
+            backendAzureRmContainerName: '$(container_name)'
+            backendAzureRmKey: '$(key)'
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: $(terraformWorkingDirectory)
+            environmentServiceNameAzureRM: 'mySC'
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: $(terraformWorkingDirectory)
+            environmentServiceNameAzureRM: 'mySC'
+  
