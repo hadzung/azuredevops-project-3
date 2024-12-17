@@ -13,6 +13,7 @@ variables:
   agentName: 'myAgent'
 
 stages:
+<<<<<<< HEAD
 - stage: TerraformInit
   jobs:
     - job: validate
@@ -79,3 +80,71 @@ stages:
           command: 'apply'
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceNameAzureRM: $(serviceConnection)
+=======
+  - stage: TerraformInit
+    jobs:
+      - job: validate
+        pool:
+         name: $(agentName)
+        continueOnError: false
+        steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: $(terraformWorkingDirectory)
+            backendServiceArm: 'mySC'
+            backendAzureRmResourceGroupName: 'Azuredevops'
+            backendAzureRmStorageAccountName: '$(storage_account_name)'
+            backendAzureRmContainerName: '$(container_name)'
+            backendAzureRmKey: '$(key)'
+        - task: TerraformTaskV4@4
+          displayName: Validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+            workingDirectory: $(terraformWorkingDirectory)
+  - stage: tfdeploy
+    condition: succeeded('TerraformInit')
+    dependsOn: TerraformInit
+    jobs:
+      - job: apply
+        pool:
+         name: $(agentName)      
+        steps:
+        - task: TerraformInstaller@1
+          displayName: Install Terraform
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: Init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: $(terraformWorkingDirectory)
+            backendServiceArm: 'mySC'
+            backendAzureRmResourceGroupName: 'Azuredevops'
+            backendAzureRmStorageAccountName: '$(storage_account_name)'
+            backendAzureRmContainerName: '$(container_name)'
+            backendAzureRmKey: '$(key)'
+        - task: TerraformTaskV4@4
+          displayName: plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: $(terraformWorkingDirectory)
+            environmentServiceNameAzureRM: 'mySC'
+        - task: TerraformTaskV4@4
+          displayName: Apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            workingDirectory: $(terraformWorkingDirectory)
+            environmentServiceNameAzureRM: 'mySC'
+  
+>>>>>>> 3a2f84ab84fdbe2239ebbbc0fd74bdc4e146393b
