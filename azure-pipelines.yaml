@@ -25,8 +25,9 @@ stages:
         displayName: Install Terraform
         inputs:
           terraformVersion: 'latest'
-      - script: | 
-        terraform force-unlock -force $(lockID) displayName: 'Force Unlock State'
+      - script: |
+          terraform force-unlock -force $(lockID)
+        displayName: 'Force Unlock State'
       - task: TerraformTaskV4@4
         displayName: Init
         inputs:
