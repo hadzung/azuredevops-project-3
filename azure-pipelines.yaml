@@ -11,37 +11,9 @@ variables:
   container_name: "tfstate"
   key: "tfstate.azure.proj3"
   agentName: 'myAgent'
+  lockID: "ec5d85c2-a6de-1f28-681d-bc13dbf74811"
 
 stages:
-- stage: TerraformInit
-  jobs:
-    - job: validate
-      pool:
-        name: $(agentName)
-      continueOnError: false
-      steps:
-      - task: TerraformInstaller@1
-        displayName: Install Terraform
-        inputs:
-          terraformVersion: 'latest'
-      - task: TerraformTaskV4@4
-        displayName: Init
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          workingDirectory: $(terraformWorkingDirectory)
-          backendServiceArm: $(serviceConnection)
-          backendAzureRmResourceGroupName: 'Azuredevops'
-          backendAzureRmStorageAccountName: $(storage_account_name)
-          backendAzureRmContainerName: $(container_name)
-          backendAzureRmKey: $(key)
-      - task: TerraformTaskV4@4
-        displayName: Validate
-        inputs:
-          provider: 'azurerm'
-          command: 'validate'
-          workingDirectory: $(terraformWorkingDirectory)
-
 - stage: tfdeploy
   condition: succeeded('TerraformInit')
   dependsOn: TerraformInit
