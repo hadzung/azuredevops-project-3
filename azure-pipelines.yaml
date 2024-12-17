@@ -11,12 +11,9 @@ variables:
   container_name: "tfstate"
   key: "tfstate.azure.proj3"
   agentName: 'myAgent'
-  lockID: "ec5d85c2-a6de-1f28-681d-bc13dbf74811"
 
 stages:
 - stage: tfdeploy
-  condition: succeeded('TerraformInit')
-  dependsOn: TerraformInit
   jobs:
     - job: apply
       pool:
