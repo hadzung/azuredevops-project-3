@@ -15,7 +15,7 @@ variables:
 stages:
 - stage: tfdeploy
   jobs:
-    - job: apply
+    - job: PrepareInfrastructure
       pool:
         name: $(agentName)
       steps:
@@ -23,7 +23,6 @@ stages:
         displayName: Install Terraform
         inputs:
           terraformVersion: 'latest'
-        displayName: 'Force Unlock State'
       - task: TerraformTaskV4@4
         displayName: Init
         inputs:
