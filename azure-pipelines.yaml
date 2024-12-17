@@ -48,3 +48,38 @@ stages:
           command: 'apply'
           workingDirectory: $(terraformWorkingDirectory)
           environmentServiceNameAzureRM: $(serviceConnection)
+
+- stage: Build
+  jobs:
+    - job: Build
+      pool:
+        name: $(agentName)
+      steps:
+      - task: ArchiveFiles@2
+        displayName: 'Archive FakeRestAPI'
+        inputs:
+          rootFolderOrFile: 'automatedtesting/jmeter/fakerestapi'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+      - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+        displayName: 'Upload Package'
+        artifact: drop-fakerestapi
+
+- stage: Deploy
+  jobs:
+    - deployment: FakeRestAPI
+      pool:
+        name: $(agentName)
+      environment: 'test-env'
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: AzureWebApp@1
+              displayName: 'Deploy Azure Web App'
+              inputs:
+                azureSubscription: $(serviceConnection)
+                appName: 'tfstate12345-AppService'
+                appType: webApp
+                package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
