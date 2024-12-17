@@ -1,7 +1,7 @@
 #!/bin/bash
 RESOURCE_GROUP_NAME="Azuredevops"
 STORAGE_ACCOUNT_NAME="tfstate$RANDOM$RANDOM"
-CONTAINER_NAME="tfstate"
+CONTAINER_NAME="tfstateproject3"
 REGION="East US 2"
 
 
