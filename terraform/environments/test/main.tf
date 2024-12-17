@@ -48,3 +48,12 @@ module "publicip" {
   resource_type    = "publicip"
   resource_group   = "${var.resource_group}"
 }
+module "vm" {
+  source              = "../../modules/vm"
+  resource_group = "${var.resource_group}"
+  location            = "${var.location}"
+  resource_type       = "AzureVM"
+  subnet_id           = "${module.network.subnet_id_test}"
+  security_group_id   = "${module.nsg-test.network_security_group_id}"
+  public_ip_id        = "${module.publicip.public_ip_address_id}"
+}
