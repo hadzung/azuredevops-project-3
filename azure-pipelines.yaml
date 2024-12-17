@@ -80,6 +80,6 @@ stages:
               displayName: 'Deploy Azure Web App'
               inputs:
                 azureSubscription: $(serviceConnection)
-                appName: 'tfstate12345-AppService'
+                appName: 'MyAppService-AppService'
                 appType: webApp
                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
