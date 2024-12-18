@@ -14,7 +14,7 @@ variables:
 
 stages:
 - stage: tfdeploy
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: PrepareInfrastructure
       pool:
@@ -51,7 +51,7 @@ stages:
           environmentServiceNameAzureRM: $(serviceConnection)
 
 - stage: Build
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: Build
       pool:
@@ -69,7 +69,7 @@ stages:
         artifact: drop-fakerestapi
 
 - stage: Deploy
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - deployment: FakeRestAPI
       pool:
@@ -128,7 +128,9 @@ stages:
           nvm install 16
           nvm use 16
           nvm alias default 16 
-          npm install -g newman
+          echo "===="
+          npm install -g newman -v
+          echo "===="
           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
     - task: PublishTestResults@2
       inputs:
