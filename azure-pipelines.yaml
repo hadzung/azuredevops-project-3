@@ -111,7 +111,6 @@ stages:
                   wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
                   unzip chromedriver*.zip
                   sudo mv chromedriver -f /usr/bin
-
 - stage: Test
   jobs:
   - job: PostmanTests
@@ -131,6 +130,8 @@ stages:
           echo "===="
           npm install -g newman -v
           echo "===="
+          ifconfig
+          whoami
           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
     - task: PublishTestResults@2
       inputs:
