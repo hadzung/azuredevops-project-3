@@ -51,7 +51,7 @@ stages:
           environmentServiceNameAzureRM: $(serviceConnection)
 
 - stage: Build
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: Build
       pool:
