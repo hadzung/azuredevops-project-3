@@ -97,7 +97,7 @@ stages:
               displayName: Configure selenium
               inputs:
                 targetType: 'inline'
-                workingDirectory: '/home/udacity/'
+                workingDirectory: '/home/myAdmin'
                 script: |
                   #! /bin/bash
                   sudo apt-get update
