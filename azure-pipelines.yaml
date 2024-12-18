@@ -116,8 +116,6 @@ stages:
   jobs:
   - job: PostmanTests
     displayName: Postman Tests
-    pool:
-        name: $(agentName)
     steps:
     - task: Bash@3
       displayName: Install newman
