@@ -69,7 +69,7 @@ stages:
         artifact: drop-fakerestapi
 
 - stage: Deploy
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
   jobs:
     - deployment: FakeRestAPI
       pool:
