@@ -14,7 +14,7 @@ variables:
 
 stages:
 - stage: tfdeploy
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: PrepareInfrastructure
       pool:
