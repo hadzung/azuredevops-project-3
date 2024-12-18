@@ -67,7 +67,7 @@ stages:
         artifact: drop-fakerestapi
 
 - stage: Deploy
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  # condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - deployment: FakeRestAPI
       pool:
@@ -84,3 +84,28 @@ stages:
                 appName: 'MyAppService-AppService'
                 appType: webApp
                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+    - deployment: VirtualMachineDeploy
+      displayName: Deploy the virtual Machine
+      environment:
+        name: 'test-env'
+        resourceType: VirtualMachine
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: Bash@3
+              displayName: Configure selenium
+              inputs:
+                targetType: 'inline'
+                workingDirectory: '/home/udacity/'
+                script: |
+                  #! /bin/bash
+                  sudo apt-get update
+                  sudo apt-get upgrade -y
+                  sudo apt-get install python3-pip unzip expect -y
+                  sudo apt-get install -y chromium-browser
+                  pip3 install selenium
+                  sudo rm -rf chromedriver*
+                  wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
+                  unzip chromedriver*.zip
+                  sudo mv chromedriver -f /usr/bin
