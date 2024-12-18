@@ -109,3 +109,32 @@ stages:
                   wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
                   unzip chromedriver*.zip
                   sudo mv chromedriver -f /usr/bin
+- stage: Test
+  jobs:
+  - job: PostmanTests
+    displayName: Postman Tests
+    pool:
+        name: $(agentName)
+    steps:
+    - task: Bash@3
+      displayName: Install newman
+      inputs:
+        targetType: 'inline'
+        script: |
+          #! /bin/bash
+          npm install -g newman
+
+    - task: Bash@3
+      displayName: Run newman
+      inputs:
+        targetType: 'inline'
+        script: |
+          #! /bin/bash
+          newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
+
+    - task: PublishTestResults@2
+      inputs:
+        displayName: Publish Test Results
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '$(System.DefaultWorkingDirectory)/ValidationReport.xml'
+        mergeTestResults: true
