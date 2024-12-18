@@ -67,7 +67,7 @@ stages:
         artifact: drop-fakerestapi
 
 - stage: Deploy
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - deployment: FakeRestAPI
       pool:
