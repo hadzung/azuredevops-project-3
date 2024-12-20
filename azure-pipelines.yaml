@@ -7,7 +7,7 @@ variables:
   serviceConnection: 'mySC'
   azureLocation: 'East US 2'
   terraformWorkingDirectory: 'terraform/environments/test'
-  storage_account_name: "tfstate297298811"
+  storage_account_name: "tfstate2877027575"
   container_name: "tfstateproject3"
   key: "tfstate.azure.proj3.1"
   agentName: 'myAgent'
@@ -122,16 +122,6 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-          source ~/.nvm/nvm.sh
-          nvm install 16
-          nvm use 16
-          nvm alias default 16 
-          echo "===="
-          npm install -g newman -v
-          echo "===="
-          ifconfig
-          whoami
           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
     - task: PublishTestResults@2
       inputs:
