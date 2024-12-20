@@ -72,8 +72,6 @@ stages:
   #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
   jobs:
     - deployment: FakeRestAPI
-      pool:
-        name: $(agentName)
       environment: 'test-env'
       strategy:
         runOnce:
@@ -87,6 +85,7 @@ stages:
                 appType: webApp
                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
     - deployment: VirtualMachineDeploy
+      #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
       displayName: Deploy the virtual Machine
       environment:
         name: 'test-env'
