@@ -114,6 +114,8 @@ stages:
 - stage: Test
   jobs:
   - job: PostmanTests
+    pool:
+        name: $(agentName)
     displayName: Postman Tests
     steps:
     - task: Bash@3
