@@ -14,7 +14,7 @@ variables:
 
 stages:
 - stage: tfdeploy
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: PrepareInfrastructure
       pool:
@@ -51,7 +51,7 @@ stages:
           environmentServiceNameAzureRM: $(serviceConnection)
 
 - stage: Build
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false')) # Condition to disable the stage
   jobs:
     - job: Build
       pool:
@@ -69,7 +69,7 @@ stages:
         artifact: drop-fakerestapi
 
 - stage: Deploy
-  condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+  #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
   jobs:
     - deployment: FakeRestAPI
       environment: 'test-env'
