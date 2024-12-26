@@ -68,65 +68,65 @@ stages:
         displayName: 'Upload Package'
         artifact: drop-fakerestapi
 
-- stage: Deploy
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
-  jobs:
-    - deployment: FakeRestAPI
-      environment: 'test-env'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: AzureWebApp@1
-              displayName: 'Deploy Azure Web App'
-              inputs:
-                azureSubscription: $(serviceConnection)
-                appName: 'MyAppService-AppService'
-                appType: webApp
-                package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-    - deployment: VirtualMachineDeploy
-      #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
-      displayName: Deploy the virtual Machine
-      environment:
-        name: 'test-env'
-        resourceType: VirtualMachine
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: Bash@3
-              displayName: Configure selenium
-              inputs:
-                targetType: 'inline'
-                workingDirectory: '/home/myAdmin'
-                script: |
-                  #! /bin/bash
-                  sudo apt-get update
-                  sudo apt-get upgrade -y
-                  sudo apt-get install python3-pip unzip expect -y
-                  sudo apt-get install -y chromium-browser
-                  pip3 install selenium
-                  sudo rm -rf chromedriver*
-                  wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
-                  unzip chromedriver*.zip
-                  sudo mv chromedriver -f /usr/bin
-- stage: Test
-  jobs:
-  - job: PostmanTests
-    pool:
-        name: $(agentName)
-    displayName: Postman Tests
-    steps:
-    - task: Bash@3
-      displayName: Install newman
-      inputs:
-        targetType: 'inline'
-        script: |
-          #! /bin/bash
-          newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
-    - task: PublishTestResults@2
-      inputs:
-        displayName: Publish Test Results
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/ValidationReport.xml'
-        mergeTestResults: true
+# - stage: Deploy
+#   #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+#   jobs:
+#     - deployment: FakeRestAPI
+#       environment: 'test-env'
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+#             - task: AzureWebApp@1
+#               displayName: 'Deploy Azure Web App'
+#               inputs:
+#                 azureSubscription: $(serviceConnection)
+#                 appName: 'MyAppService-AppService'
+#                 appType: webApp
+#                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+#     - deployment: VirtualMachineDeploy
+#       #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+#       displayName: Deploy the virtual Machine
+#       environment:
+#         name: 'test-env'
+#         resourceType: VirtualMachine
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+#             - task: Bash@3
+#               displayName: Configure selenium
+#               inputs:
+#                 targetType: 'inline'
+#                 workingDirectory: '/home/myAdmin'
+#                 script: |
+#                   #! /bin/bash
+#                   sudo apt-get update
+#                   sudo apt-get upgrade -y
+#                   sudo apt-get install python3-pip unzip expect -y
+#                   sudo apt-get install -y chromium-browser
+#                   pip3 install selenium
+#                   sudo rm -rf chromedriver*
+#                   wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
+#                   unzip chromedriver*.zip
+#                   sudo mv chromedriver -f /usr/bin
+# - stage: Test
+#   jobs:
+#   - job: PostmanTests
+#     pool:
+#         name: $(agentName)
+#     displayName: Postman Tests
+#     steps:
+#     - task: Bash@3
+#       displayName: Install newman
+#       inputs:
+#         targetType: 'inline'
+#         script: |
+#           #! /bin/bash
+#           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
+#     - task: PublishTestResults@2
+#       inputs:
+#         displayName: Publish Test Results
+#         testResultsFormat: 'JUnit'
+#         testResultsFiles: '$(System.DefaultWorkingDirectory)/ValidationReport.xml'
+#         mergeTestResults: true
