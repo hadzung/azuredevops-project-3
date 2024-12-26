@@ -153,7 +153,6 @@ stages:
           sudo apt-get install -f
       displayName: 'Install Google Chrome'
     - script: |
-        CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
         wget https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chrome-linux64.zip
         unzip chromedriver_linux64.zip
         sudo mv chrome-linux64/chromedriver /usr/local/bin/
