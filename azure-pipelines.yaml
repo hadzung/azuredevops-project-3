@@ -130,3 +130,40 @@ stages:
         testResultsFormat: 'JUnit'
         testResultsFiles: '$(System.DefaultWorkingDirectory)/*Report.xml'
         mergeTestResults: true
+  - job: SeleniumTests
+    displayName: Selenium Tests
+    steps:
+    - task: Bash@3
+      displayName: Install dependencies
+      inputs:
+        targetType: 'inline'
+    - script: |
+          #! /bin/bash
+          python -m pip install --upgrade pip
+          pip install selenium
+          pip install pytest
+          pip install pytest-html
+          pip install pytest-xdist
+          pip install pytest-nunit
+    - script: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+          sudo dpkg -i google-chrome-stable_current_amd64.deb
+          sudo apt-get install -f
+      displayName: 'Install Google Chrome'
+    - script: |
+        CHROME_DRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        wget https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chrome-linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chrome-linux64/chromedriver /usr/local/bin/
+      displayName: 'Install ChromeDriver'
+    - script: |
+        python test_suite.py | tee test_output.log
+      displayName: 'Run Selenium tests'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'test_output.log'
+        artifact: test-logs
+        publishLocation: 'pipeline'
+      displayName: 'Upload log file'
