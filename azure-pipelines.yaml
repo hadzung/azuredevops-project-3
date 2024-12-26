@@ -84,31 +84,6 @@ stages:
                 appName: 'MyAppService-AppService'
                 appType: webApp
                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-    - deployment: VirtualMachineDeploy
-      #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
-      displayName: Deploy the virtual Machine
-      environment:
-        name: 'test-env'
-        resourceType: VirtualMachine
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: Bash@3
-              displayName: Configure selenium
-              inputs:
-                targetType: 'inline'
-                workingDirectory: '/home/myAdmin'
-                script: |
-                  #! /bin/bash
-                  python -m pip install --upgrade pip
-                  pip install selenium
-                  pip install pytest
-                  pip install pytest-html
-                  pip install chromedriver-py==96.0.4664.18
-                  pip install pytest-xdist
-                  pip install pytest-nunit
-                  python3 automatedtesting/selenium/login.py
 - stage: Test
   jobs:
   - job: PostmanTests
