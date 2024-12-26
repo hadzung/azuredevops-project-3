@@ -114,12 +114,14 @@ stages:
         targetType: 'inline'
     - script: |
           #! /bin/bash
-          python -m pip install --upgrade pip
-          pip install selenium
-          pip install pytest
-          pip install pytest-html
-          pip install pytest-xdist
-          pip install pytest-nunit
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install -y python3.10
+          sudo apt install -y python3.10-distutils
+          curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
     - script: |
           sudo apt-get update
           sudo apt-get install -y wget
@@ -133,7 +135,7 @@ stages:
         sudo mv chrome-linux64/chromedriver /usr/local/bin/
       displayName: 'Install ChromeDriver'
     - script: |
-        python test_suite.py | tee test_output.log
+        python3 test_suite.py | tee test_output.log
       displayName: 'Run Selenium tests'
     - task: PublishPipelineArtifact@1
       inputs:
