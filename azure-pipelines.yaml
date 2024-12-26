@@ -101,15 +101,14 @@ stages:
                 workingDirectory: '/home/myAdmin'
                 script: |
                   #! /bin/bash
-                  sudo apt-get update
-                  sudo apt-get upgrade -y
-                  sudo apt-get install python3-pip unzip expect -y
-                  sudo apt-get install -y chromium-browser
-                  pip3 install selenium
-                  sudo rm -rf chromedriver*
-                  wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
-                  unzip chromedriver*.zip
-                  sudo mv chromedriver -f /usr/bin
+                  python -m pip install --upgrade pip
+                  pip install selenium
+                  pip install pytest
+                  pip install pytest-html
+                  pip install chromedriver-py==96.0.4664.18
+                  pip install pytest-xdist
+                  pip install pytest-nunit
+                  python3 automatedtesting/selenium/login.py
 - stage: Test
   jobs:
   - job: PostmanTests
