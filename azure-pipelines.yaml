@@ -124,9 +124,10 @@ stages:
         script: |
           #! /bin/bash
           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
+          newman run automatedtesting/postman/Regression\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export RegressionReport.xml
     - task: PublishTestResults@2
       inputs:
         displayName: Publish Test Results
         testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/ValidationReport.xml'
+        testResultsFiles: '$(System.DefaultWorkingDirectory)/*Report.xml'
         mergeTestResults: true
