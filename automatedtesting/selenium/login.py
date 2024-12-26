@@ -5,31 +5,19 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 
-
-# Start the browser and login with standard_user
-def login (user, password):
-    print ('Starting the browser...')
-    # --uncomment when running in Azure DevOps.
-    options = ChromeOptions()
-    options.add_argument("--headless") 
-    driver = webdriver.Chrome(options=options)
-    driver = webdriver.Chrome()
-    print ('Browser started successfully. Navigating to the demo page to login.')
-    driver.get('https://www.saucedemo.com/')
-
-login('standard_user', 'secret_sauce')
-
 # ToDo: Add more functional UI tests as per your requirements. 
 def add_all_products_to_cart(driver):
     print("Adding all products to the cart.")
     products = driver.find_elements(By.CLASS_NAME, "inventory_item")
     for product in products:
-        product.find_element(By.CLASS_NAME, "btn_inventory").click()
+        product.find_element(By.XPATH, "//button[text()='Add to cart']").click()
     print("All products added to the cart.")
+    time.sleep(5)
+
 
 def remove_all_products_from_cart(driver):
     print("Removing all products from the cart.")
-    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    driver.find_element(By.XPATH, "//*[@id='shopping_cart_container']/a").click()
     time.sleep(2)
     cart_items = driver.find_elements(By.CLASS_NAME, "cart_item")
     for item in cart_items:
@@ -41,7 +29,13 @@ def main():
     driver.get("https://www.saucedemo.com/")
     
     print("Logging in...")
-    login("standard_user", "secret_sauce")
+    username_input = driver.find_element(By.ID, "user-name")
+    password_input = driver.find_element(By.ID, "password")
+    login_button = driver.find_element(By.ID, "login-button")
+    
+    username_input.send_keys("standard_user")
+    password_input.send_keys("secret_sauce")
+    login_button.click()
     
     print("Login successful.")
     add_all_products_to_cart(driver)
