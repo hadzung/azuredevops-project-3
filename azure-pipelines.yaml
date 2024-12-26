@@ -7,7 +7,7 @@ variables:
   serviceConnection: 'mySC'
   azureLocation: 'East US 2'
   terraformWorkingDirectory: 'terraform/environments/test'
-  storage_account_name: "tfstate2877027575"
+  storage_account_name: "tfstate2662823821"
   container_name: "tfstateproject3"
   key: "tfstate.azure.proj3.1"
   agentName: 'myAgent'
@@ -84,32 +84,32 @@ stages:
                 appName: 'MyAppService-AppService'
                 appType: webApp
                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-    # - deployment: VirtualMachineDeploy
-    #   #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
-    #   displayName: Deploy the virtual Machine
-    #   environment:
-    #     name: 'test-env'
-    #     resourceType: VirtualMachine
-    #   strategy:
-    #     runOnce:
-    #       deploy:
-    #         steps:
-    #         - task: Bash@3
-    #           displayName: Configure selenium
-    #           inputs:
-    #             targetType: 'inline'
-    #             workingDirectory: '/home/myAdmin'
-    #             script: |
-    #               #! /bin/bash
-    #               sudo apt-get update
-    #               sudo apt-get upgrade -y
-    #               sudo apt-get install python3-pip unzip expect -y
-    #               sudo apt-get install -y chromium-browser
-    #               pip3 install selenium
-    #               sudo rm -rf chromedriver*
-    #               wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
-    #               unzip chromedriver*.zip
-    #               sudo mv chromedriver -f /usr/bin
+    - deployment: VirtualMachineDeploy
+      #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+      displayName: Deploy the virtual Machine
+      environment:
+        name: 'test-env'
+        resourceType: VirtualMachine
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: Bash@3
+              displayName: Configure selenium
+              inputs:
+                targetType: 'inline'
+                workingDirectory: '/home/myAdmin'
+                script: |
+                  #! /bin/bash
+                  sudo apt-get update
+                  sudo apt-get upgrade -y
+                  sudo apt-get install python3-pip unzip expect -y
+                  sudo apt-get install -y chromium-browser
+                  pip3 install selenium
+                  sudo rm -rf chromedriver*
+                  wget https://chromedriver.storage.googleapis.com/96.0.4664.18/chromedriver_linux64.zip # update the version here
+                  unzip chromedriver*.zip
+                  sudo mv chromedriver -f /usr/bin
 - stage: Test
   jobs:
   - job: PostmanTests
@@ -123,9 +123,6 @@ stages:
         targetType: 'inline'
         script: |
           #! /bin/bash
-          node -v
-          nvm install v18.20.5
-          npm install -g newman
           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
     - task: PublishTestResults@2
       inputs:
