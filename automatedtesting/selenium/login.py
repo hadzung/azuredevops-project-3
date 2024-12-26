@@ -41,7 +41,7 @@ def main():
     driver.get("https://www.saucedemo.com/")
     
     print("Logging in...")
-    login(driver, "standard_user", "secret_sauce")
+    login("standard_user", "secret_sauce")
     
     print("Login successful.")
     add_all_products_to_cart(driver)
