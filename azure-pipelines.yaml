@@ -143,3 +143,27 @@ stages:
         artifact: test-logs
         publishLocation: 'pipeline'
       displayName: 'Upload log file'
+  - job: JmeterTests
+    pool:
+        name: $(agentName)
+    displayName: Jmeter Tests
+    steps:
+    - task: Bash@3
+      displayName: Install dependencies
+      inputs:
+        targetType: 'inline'
+    - script: |
+          #! /bin/bash          
+          sudo apt-get upgrade -y
+          sudo apt install openjdk-11-jdk -y
+          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.zip
+          unzip apache-jmeter-5.6.3.zip
+          apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/Jmeter/EnduranceTest.jmx -l EnduranceTest.jtl -e -f -o EnduranceTest-test-log.html -j EnduranceTest-jmeter.log
+          apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/Jmeter/StressTest.jmx -l StressTest.jtl -e -f -o StressTest-test-log.html -j StressTest-jmeter.log
+      displayName: 'Run Jmeter tests'
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: 'test_output.log'
+        artifact: test-logs
+        publishLocation: 'pipeline'
+      displayName: 'Upload log file'
