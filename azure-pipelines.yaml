@@ -163,7 +163,7 @@ stages:
       displayName: 'Run Jmeter tests'
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: 'test_output.log'
+        targetPath: '*-jmeter.log'
         artifact: test-logs
         publishLocation: 'pipeline'
       displayName: 'Upload log file'
