@@ -137,12 +137,10 @@ stages:
           pip install pytest-nunit
           python3 automatedtesting/selenium/test_suite.py >> tee test_output.log
       displayName: 'Run Selenium tests'
-    - task: PublishPipelineArtifact@1
+    - task: PublishBuildArtifacts@1
       inputs:
-        targetPath: 'test_output.log'
-        artifact: test-logs
-        publishLocation: 'pipeline'
-      displayName: 'Upload log file'
+        PathtoPublish: 'test_output.log'
+        ArtifactName: 'SeleniumLogs'
   - job: JmeterTests
     pool:
         name: $(agentName)
