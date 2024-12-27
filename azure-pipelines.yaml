@@ -161,9 +161,9 @@ stages:
           apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/EnduranceTest.jmx -l EnduranceTest.jtl -e -f -o logs/EnduranceTest-test-log.html -j logs/EnduranceTest-jmeter.log
           apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/StressTest.jmx -l StressTest.jtl -e -f -o logs/StressTest-test-log.html -j logs/StressTest-jmeter.log
       displayName: 'Run Jmeter tests'
-    - task: PublishPipelineArtifact@1
+    - task: ArchiveFiles@2
       inputs:
-        targetPath: 'logs'
-        artifact: test-logs
-        publishLocation: 'pipeline'
-      displayName: 'Upload log file'
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/logs'  # Directory containing the HTML reports
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/JmeterReports.zip'
