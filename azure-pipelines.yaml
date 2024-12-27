@@ -129,8 +129,8 @@ stages:
           sudo apt-get install -f
           wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip
           unzip chromedriver_linux64.zip
-          sudo mv chrome-linux64/chromedriver-linux64/chromedriver /usr/local/bin/
-          python3 test_suite.py | tee test_output.log
+          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          python3 automatedtesting/selenium/login.py | tee test_output.log
       displayName: 'Run Selenium tests'
     - task: PublishPipelineArtifact@1
       inputs:
