@@ -135,7 +135,7 @@ stages:
           pip install pytest-html
           pip install pytest-xdist
           pip install pytest-nunit
-          python3 automatedtesting/selenium/test_suite.py >> tee test_output.log
+          python3 automatedtesting/selenium/test_suite.py >> test_output.log
       displayName: 'Run Selenium tests'
     - task: PublishBuildArtifacts@1
       inputs:
