@@ -25,6 +25,10 @@ def remove_all_products_from_cart(driver):
     print("All products removed from the cart.")
 
 def main():
+    options = webdriver.ChromeOptions()
+    options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Chrome()
     driver.get("https://www.saucedemo.com/")
     
