@@ -7,7 +7,7 @@ variables:
   serviceConnection: 'mySC'
   azureLocation: 'East US 2'
   terraformWorkingDirectory: 'terraform/environments/test'
-  storage_account_name: "tfstate2100610516"
+  storage_account_name: "tfstate1532316164"
   container_name: "tfstateproject3"
   key: "tfstate.azure.proj3.1"
   agentName: 'myAgent'
