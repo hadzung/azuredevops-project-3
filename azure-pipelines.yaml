@@ -130,6 +130,11 @@ stages:
           wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip
           unzip chromedriver-linux64.zip
           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+          pip install selenium
+          pip install pytest
+          pip install pytest-html
+          pip install pytest-xdist
+          pip install pytest-nunit
           python3 automatedtesting/selenium/login.py | tee test_output.log
       displayName: 'Run Selenium tests'
     - task: PublishPipelineArtifact@1
