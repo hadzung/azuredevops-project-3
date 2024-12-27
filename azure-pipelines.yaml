@@ -68,100 +68,100 @@ stages:
         displayName: 'Upload Package'
         artifact: drop-fakerestapi
 
-- stage: Deploy
-  #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
-  jobs:
-    - deployment: FakeRestAPI
-      environment: 'test-env'
-      strategy:
-        runOnce:
-          deploy:
-            steps:
-            - task: AzureWebApp@1
-              displayName: 'Deploy Azure Web App'
-              inputs:
-                azureSubscription: $(serviceConnection)
-                appName: 'MyAppService-AppService'
-                appType: webApp
-                package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-- stage: Test
-  jobs:
-  - job: PostmanTests
-    pool:
-        name: $(agentName)
-    displayName: Postman Tests
-    steps:
-    - task: Bash@3
-      displayName: Install newman
-      inputs:
-        targetType: 'inline'
-        script: |
-          #! /bin/bash
-          newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
-          newman run automatedtesting/postman/Regression\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export RegressionReport.xml
-    - task: PublishTestResults@2
-      inputs:
-        displayName: Publish Test Results
-        testResultsFormat: 'JUnit'
-        testResultsFiles: '$(System.DefaultWorkingDirectory)/*Report.xml'
-        mergeTestResults: true
-  - job: SeleniumTests
-    pool:
-        name: $(agentName)
-    displayName: Selenium Tests
-    steps:
-    - task: Bash@3
-      displayName: Install dependencies
-      inputs:
-        targetType: 'inline'
-    - script: |
-          #! /bin/bash
-          sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository ppa:deadsnakes/ppa
-          sudo apt-get update
-          sudo apt-get install -y python3.10
-          sudo apt-get install -y python3.10-distutils
-          curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i --force-all google-chrome-stable_current_amd64.deb
-          sudo apt-get install -f
-          wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip
-          unzip chromedriver-linux64.zip
-          sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-          pip install selenium webdriver-manager
-          pip install pytest
-          pip install pytest-html
-          pip install pytest-xdist
-          pip install pytest-nunit
-          python3 automatedtesting/selenium/test_suite.py >> tee test_output.log
-      displayName: 'Run Selenium tests'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: 'test_output.log'
-        ArtifactName: 'SeleniumLogs'
-  - job: JmeterTests
-    pool:
-        name: $(agentName)
-    displayName: Jmeter Tests
-    steps:
-    - task: Bash@3
-      displayName: Install dependencies
-      inputs:
-        targetType: 'inline'
-    - script: |
-          #! /bin/bash          
-          sudo apt-get upgrade -y
-          sudo apt install openjdk-11-jdk -y
-          wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.zip
-          unzip apache-jmeter-5.6.3.zip
-          apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/EnduranceTest.jmx -l EnduranceTest.jtl -e -f -o logs/EnduranceTest-test-log.html -j logs/EnduranceTest-jmeter.log
-          apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/StressTest.jmx -l StressTest.jtl -e -f -o logs/StressTest-test-log.html -j logs/StressTest-jmeter.log
-      displayName: 'Run Jmeter tests'
-    - task: ArchiveFiles@2
-      inputs:
-        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/logs'  # Directory containing the HTML reports
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Build.ArtifactStagingDirectory)/JmeterReports.zip'
+# - stage: Deploy
+#   #condition: and(succeeded(), eq(variables['disableBuild'], 'false'))
+#   jobs:
+#     - deployment: FakeRestAPI
+#       environment: 'test-env'
+#       strategy:
+#         runOnce:
+#           deploy:
+#             steps:
+#             - task: AzureWebApp@1
+#               displayName: 'Deploy Azure Web App'
+#               inputs:
+#                 azureSubscription: $(serviceConnection)
+#                 appName: 'MyAppService-AppService'
+#                 appType: webApp
+#                 package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+# - stage: Test
+#   jobs:
+#   - job: PostmanTests
+#     pool:
+#         name: $(agentName)
+#     displayName: Postman Tests
+#     steps:
+#     - task: Bash@3
+#       displayName: Install newman
+#       inputs:
+#         targetType: 'inline'
+#         script: |
+#           #! /bin/bash
+#           newman run automatedtesting/postman/Data\ Validation\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export ValidationReport.xml
+#           newman run automatedtesting/postman/Regression\ Test\ Suite.postman_collection.json -e automatedtesting/postman/Test\ Environment.postman_environment.json --reporters cli,junit --reporter-junit-export RegressionReport.xml
+#     - task: PublishTestResults@2
+#       inputs:
+#         displayName: Publish Test Results
+#         testResultsFormat: 'JUnit'
+#         testResultsFiles: '$(System.DefaultWorkingDirectory)/*Report.xml'
+#         mergeTestResults: true
+#   - job: SeleniumTests
+#     pool:
+#         name: $(agentName)
+#     displayName: Selenium Tests
+#     steps:
+#     - task: Bash@3
+#       displayName: Install dependencies
+#       inputs:
+#         targetType: 'inline'
+#     - script: |
+#           #! /bin/bash
+#           sudo apt-get update
+#           sudo apt-get upgrade -y
+#           sudo apt-get install -y software-properties-common
+#           sudo add-apt-repository ppa:deadsnakes/ppa
+#           sudo apt-get update
+#           sudo apt-get install -y python3.10
+#           sudo apt-get install -y python3.10-distutils
+#           curl -sS https://bootstrap.pypa.io/get-pip.py | sudo python3.10
+#           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+#           sudo dpkg -i --force-all google-chrome-stable_current_amd64.deb
+#           sudo apt-get install -f
+#           wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.204/linux64/chromedriver-linux64.zip
+#           unzip chromedriver-linux64.zip
+#           sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+#           pip install selenium webdriver-manager
+#           pip install pytest
+#           pip install pytest-html
+#           pip install pytest-xdist
+#           pip install pytest-nunit
+#           python3 automatedtesting/selenium/test_suite.py >> tee test_output.log
+#       displayName: 'Run Selenium tests'
+#     - task: PublishBuildArtifacts@1
+#       inputs:
+#         PathtoPublish: 'test_output.log'
+#         ArtifactName: 'SeleniumLogs'
+#   - job: JmeterTests
+#     pool:
+#         name: $(agentName)
+#     displayName: Jmeter Tests
+#     steps:
+#     - task: Bash@3
+#       displayName: Install dependencies
+#       inputs:
+#         targetType: 'inline'
+#     - script: |
+#           #! /bin/bash          
+#           sudo apt-get upgrade -y
+#           sudo apt install openjdk-11-jdk -y
+#           wget https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.3.zip
+#           unzip apache-jmeter-5.6.3.zip
+#           apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/EnduranceTest.jmx -l EnduranceTest.jtl -e -f -o logs/EnduranceTest-test-log.html -j logs/EnduranceTest-jmeter.log
+#           apache-jmeter-5.6.3/bin/jmeter -n -t automatedtesting/jmeter/StressTest.jmx -l StressTest.jtl -e -f -o logs/StressTest-test-log.html -j logs/StressTest-jmeter.log
+#       displayName: 'Run Jmeter tests'
+#     - task: ArchiveFiles@2
+#       inputs:
+#         rootFolderOrFile: '$(System.DefaultWorkingDirectory)/logs'  # Directory containing the HTML reports
+#         includeRootFolder: false
+#         archiveType: 'zip'
+#         archiveFile: '$(Build.ArtifactStagingDirectory)/JmeterReports.zip'
